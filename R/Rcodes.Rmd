@@ -1,0 +1,274 @@
+# Necessary Packages
+
+```{r include=FALSE}
+library(tidyverse)      # data manipulation
+library(ggplot2)        # data visualization
+library(hrbrthemes)     # customization of plot theme
+library(ROSE)           # over and under balancing data 
+library(forester)       # training tree-based models (from GitHub: https://github.com/ModelOriented/forester)
+library(DALEX)          # using XAI tools
+library(ingredients)    # creating CP and AP 
+library(worldfootballR) # scraping shot data  (from GitHub: https://github.com/JaseZiv/worldfootballR)
+```
+
+
+
+```{r eval=FALSE, include=FALSE}
+# Ligue 1
+ligue1_2020_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2020)
+ligue1_2019_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2019)
+ligue1_2018_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2018)
+ligue1_2017_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2017)
+ligue1_2016_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2016)
+ligue1_2015_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2015)
+ligue1_2014_shot_location <- understat_league_season_shots(league = "Ligue 1", season_start_year = 2014)
+
+# Serie A
+seriea_2020_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2020)
+seriea_2019_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2019)
+seriea_2018_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2018)
+seriea_2017_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2017)
+seriea_2016_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2016)
+seriea_2015_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2015)
+seriea_2014_shot_location <- understat_league_season_shots(league = "Serie A", season_start_year = 2014)
+
+# Bundesliga
+bundesliga_2020_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2020)
+bundesliga_2019_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2019)
+bundesliga_2018_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2018)
+bundesliga_2017_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2017)
+bundesliga_2016_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2016)
+bundesliga_2015_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2015)
+bundesliga_2014_shot_location <- understat_league_season_shots(league = "Bundesliga", season_start_year = 2014)
+
+# La Liga
+laliga_2020_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2020)
+laliga_2019_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2019)
+laliga_2018_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2018)
+laliga_2017_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2017)
+laliga_2016_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2016)
+laliga_2015_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2015)
+laliga_2014_shot_location <- understat_league_season_shots(league = "La liga", season_start_year = 2014)
+
+# EPL
+epl_2020_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2020)
+epl_2019_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2019)
+epl_2018_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2018)
+epl_2017_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2017)
+epl_2016_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2016)
+epl_2015_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2015)
+epl_2014_shot_location <- understat_league_season_shots(league = "EPL", season_start_year = 2014)
+
+# combining data
+raw_data <- rbind(ligue1_2020_shot_location,
+                  ligue1_2019_shot_location,
+                  ligue1_2018_shot_location,
+                  ligue1_2017_shot_location,
+                  ligue1_2016_shot_location,
+                  ligue1_2015_shot_location,
+                  ligue1_2014_shot_location,
+                  
+                  seriea_2020_shot_location,
+                  seriea_2019_shot_location,
+                  seriea_2018_shot_location,
+                  seriea_2017_shot_location,
+                  seriea_2016_shot_location,
+                  seriea_2015_shot_location,
+                  seriea_2014_shot_location,
+                 
+                  bundesliga_2020_shot_location,
+                  bundesliga_2019_shot_location,
+                  bundesliga_2018_shot_location,
+                  bundesliga_2017_shot_location,
+                  bundesliga_2016_shot_location,
+                  bundesliga_2015_shot_location,
+                  bundesliga_2014_shot_location,
+                
+                  laliga_2020_shot_location,
+                  laliga_2019_shot_location,
+                  laliga_2018_shot_location,
+                  laliga_2017_shot_location,
+                  laliga_2016_shot_location,
+                  laliga_2015_shot_location,
+                  laliga_2014_shot_location,
+                  
+                  epl_2020_shot_location,
+                  epl_2019_shot_location,
+                  epl_2018_shot_location,
+                  epl_2017_shot_location,
+                  epl_2016_shot_location,
+                  epl_2015_shot_location,
+                  epl_2014_shot_location)
+                 
+                  
+```
+
+
+
+
+```{r include=FALSE}
+dataset <- read.csv("https://understat.com/")
+shot_stats <- raw_data %>% filter(result != "OwnGoal") %>%
+  mutate(status = ifelse(result == "Goal", 1, 0)) %>%
+  mutate(distanceToGoal = sqrt((105 - (X * 105)) ^ 2 + (34 - (Y * 68)) ^ 2)) %>%
+  mutate(angleToGoal = abs(atan((7.32 * (105 - (X * 105))) / ((105 - (X * 105))^2 + (34 - (Y * 68)) ^ 2 - (7.32 / 2) ^ 2)) * 180 / pi)) %>%
+  mutate(h_a = factor(h_a),
+         situation = factor(situation),
+         shotType = factor(shotType),
+         lastAction = factor(lastAction),
+         minute = as.numeric(minute)) %>%
+  select(status, minute, h_a, situation, shotType, lastAction, 
+         distanceToGoal, angleToGoal, league, season, match_id, result, player_id)
+```
+
+
+# Preparing sets for model training
+
+```{r}
+# preparing train set of original dataset
+train_data <- shot_stats %>%
+   select(status, minute, h_a, situation, shotType, lastAction, 
+          distanceToGoal, angleToGoal)
+
+# preparing train set of under-sampled dataset
+set.seed(123)
+under_train_data <- ovun.sample(status ~ ., data = train_data, method = "under")
+
+# preparing train set of over-sampled dataset
+set.seed(123)
+over_train_data <- ovun.sample(status ~ ., data = train_data, method = "over")
+```
+
+
+# Model training
+
+## Modifications on {forester}
+
+We changed and expanded some functions of the forester package. You can see the reasons for this action below:
+
+* The forester returns the predicted labels, we changed this with predicted probabilities to calculate the performance metrics which are based on probabilities such as log-loss, Brier score and MCC.
+
+* The forester returns only the output of the best performing model in terms of the value of intended metric, we expanded it to return the output of all models for comparing their performance with the additional metrics.
+
+* After under-sample the dataset, the ranger changes the reference class in the model and causes a inconsistency. Thus, we add an argument to the make_ranger and forester functions to control the reference class.
+
+```{r}
+source("evaluate.R")
+source("forester.R")
+source("make_ranger.R")
+source("make_xgboost.R")
+source("make_lightgbm.R")
+source("make_catboost.R")
+source("model_performancex.R")
+```
+
+
+We use the forester `forester` AutoML tool to train various tree-based classification models from `XGBoost`, `randomForest`, `LightGBM`, and `CatBoost` libraries.
+
+```{r}
+# training tree-based models on original dataset
+set.seed(123)
+original_model <- forester(data   = train_data,
+                           target = "status",
+                           type   = "classification")
+
+# training tree-based models on under-sampled dataset
+set.seed(123)
+under_model <- forester(data    = under_train_data$data,
+                        target  = "status",
+                        type    = "classification",
+                        refclass = "")
+
+# training tree-based models on over-sampled dataset
+set.seed(123)
+over_model <- forester(data   = over_train_data$data,
+                       target = "status",
+                       type   = "classification")
+```
+
+
+# Table II: The summary statistics of the shots and goals, such as the number of matches, shots, goals, the mean of shots and goals per match and the conversion percent of a shot to goal for per league over seven seasons
+
+```{r}
+dataset %>%
+  filter(result != "OwnGoal") %>%
+  group_by(league) %>%
+  summarise(nmatch = length(unique(match_id)), # number of matches
+            nshot  = length(match_id),         # number of shots
+            mshot  = nshot / nmatch,           # mean of shots per match
+            ngoal  = sum(result == "Goal"),    # number of goals
+            mgoal  = ngoal / nmatch,           # mean of goals per match
+            conv   = ngoal / nshot * 100)      # convertion percent of the shots to goal
+```
+
+
+# Table III: Performance of trained xG models
+
+```{r}
+# performance of random forest model
+# on over-sampled data
+model_performancex(over_model$model3)
+```
+
+```{r}
+# on under-sampled data
+model_performancex(under_model$model3)
+```
+
+```{r}
+# on original data
+model_performancex(original_model$model3)
+```
+
+
+```{r}
+# performance of catboost model
+# on over-sampled data
+model_performancex(over_model$model1)
+```
+
+```{r}
+# on under-sampled data
+model_performancex(under_model$model1)
+```
+
+```{r}
+# on original data
+model_performancex(original_model$model1)
+```
+
+
+```{r}
+# performance of xgboost model
+# on over-sampled data
+model_performancex(over_model$model2)
+```
+
+```{r}
+# on under-sampled data
+model_performancex(under_model$model2)
+```
+
+```{r}
+# on original data
+model_performancex(original_model$model2)
+```
+
+
+```{r}
+# performance of lightgbm model
+# on over-sampled data
+model_performancex(over_model$model4)
+```
+
+```{r}
+# on under-sampled data
+model_performancex(under_model$model4)
+```
+
+```{r}
+# on original data
+model_performancex(original_model$model4)
+```
+
+
